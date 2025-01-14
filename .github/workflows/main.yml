@@ -1,0 +1,43 @@
+name: CI/CD - TP - Partie 3
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run E2E tests
+        run: npm run test:e2e:ci
+
+      - name: Set variables d'environnement
+        run: |
+          echo "GITHUB_ACCOUNT=$GITHUB_ACTOR" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date)" >> $GITHUB_ENV
+
+      - name: Build project
+        run: npm run build
+
+      - name: Déployer serveur SSH
+        run: printf "${{secrets.ssh_key}}" > ~/ssh_key && chmod 400 ~/ssh_key
+
+      - name: Déplacer contenu fichier
+        run: rsync -Pav -e "ssh -i ~/ssh_key -o StrictHostKeyChecking=no" dist/ ${{secrets.ssh_user}}@${{secrets.ssh_server}}:~/www/test_tp_gh
