@@ -34,7 +34,7 @@ jobs:
         run: npm run build
 
       - name: Déployer serveur SSH
-        run: printf "${{secrets.SSH_KEY}}" > ~/deployement_key && chmod 400 ~/deployement_key
+        run: echo "${{secrets.SSH_KEY}}" > ~/deployement_key && chmod 400 ~/deployement_key
 
       - name: Déplacer contenu fichier
         run: rsync -Pav -e "ssh -i ~/deployement_key -o StrictHostKeyChecking=no" dist/ ${{secrets.SSH_USER}}@${{secrets.SSH_USER}}:~/www/test_tp_gh
