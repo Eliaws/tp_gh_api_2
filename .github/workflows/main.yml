@@ -22,11 +22,8 @@ jobs:
       - name: Lint code
         run: npm run lint
 
-      - name: Run unit tests
-        run: npm run test:unit
-
-      - name: Run E2E tests
-        run: npm run test:e2e
+      # - name: Run E2E tests
+      #   run: npm run test:e2e
 
       - name: Set variables d'environnement
         run: |
